@@ -1,0 +1,82 @@
+======================================================================================================
+Organização dos Arquivos:
+	- players.h -> Struct dos jogadores, funções de movimentação
+				e criação e destruição de um player.
+	- scams.h	-> Um arquivo para cada personagem. Contém os gol-
+				pes, colisões e barra de vida.
+	- world.h	-> Tela de início, escolha dos jogadores e dos ce-
+				nários.
+
+	- street_fighter.c -> Código principal. Criação e destruição do
+				display e fila de eventos.
+======================================================================================================
+-> Primeira Tentativa do Makefile:
+	Acusa referência não definida para as bibliotecas do allegro.
+pkg-config é utilizado para buscar as flags corretas das biblio-
+tecas.
+
+	CC              = gcc
+	CFLAGS          = -Wall -Wextra -g
+	PKG_CONFIG      = pkg-config
+	PKG_CONFIG_LIBS = allegro-5 allegro_main-5 allegro_font-5 allegro_image-5 allegro_ttf-5
+	LDFLAGS         = $(shell $(PKG_CONFIG) --libs $(PKG_CONFIG_LIBS))
+	CFLAGS          += $(shell $(PKG_CONFIG) --cflags $(PKG_CONFIG_LIBS))
+	MAIN            = street_fighter
+
+	#programa principal - street_figther.c
+	$(MAIN):    $(MAIN).o players.o scams_ken.o scams_ryu.o
+	$(MAIN).o:  $(MAIN).c players.c scams_ken.c scams_ryu.c
+
+	#TADS
+	players.o:      players.c players.h
+	scams_ken.o:    scams_ken.c scams_ken.h
+	scams_ryu.o:    scams_ryu.c scams_ryu.h
+
+	clean:
+		rm -f *.o*~ $(MAIN)
+-> A segunda funcionou!!!
+======================================================================================================
+-> Sugestão de Organização de código.
+	.Criar um vetor com os números que eu vou usar muito, por exemplo
+	largura (50), altura (121) 
+======================================================================================================
+-> Terminei a movimentação básica dos personagens, ou seja, o arquivo players.c
+	.Detalhes importantes:
+		- Posso melhorar a função de inicializar e a função de inverter os personagens.
+		- Preciso falar com o professor sobre a colisão no eixo y, está estranha.
+		- A velocidade do jogo está me incomodando, mas ainda não encontrei uma maneira
+		de ajustar a animação para um fps maior. Talvez, comentar com o professor que 
+		quando eu adiciono um float e não um inteiro em (player->anima) ele não roda a 
+		animação.
+	.Considerações:
+		- A movimentação que eu tive mais problemas para implementar foi a de salto e a de
+		agachar. Demorei para entender que o mapemento do player->frame_atual_x estava incor-
+		reto, o que resultava em acesso a posições não existentes na planilha de sprites. Na
+		função de agachar, esse erro resultava em uma tela azul, ao passo que, na função
+		para saltar, aparecia uma sequência muito esquisita de sprites.
+		- Eu havia implementado a animação das sprites com (frame = (frame + 1) % x), mas essa
+		forma não atendia todas as larguras das figuras, pois algumas são mais largas do que ou-
+		tras, o que impede o bom funcionamento dessa estratégia. Conversei com um amigo meu e ele
+		me sugeriu copiar e colar as sprites que eu utilizaria em um arquivo separado, colocar os
+		pontos dos cantos superiores esquerdos delas em uma matriz e utilizar essa matriz na animação
+		dos personagens. Funcionou muito bem! Precisei mudar algumas coisas, mas gostei mais da imple-
+		mentação utilizando a matriz.
+		- Ainda estou com problemas na colisão no eixo yimple-
+		mentação utilizando a matriz.
+		- Ainda estou com problemas na colisão no eixo y.
+======================================================================================================
+-> Lista de Implementações Extras
+	.Animação do personagem levando dano.
+	.Imagem do player ao lado da barra de vida.
+	.Quando a vida do player está menor ou igual que 25 a cor da barra de vida muda.
+	.Musica na tela de início.
+	.Música na tela de seleção de jogadores.
+	.Musica durante as rodadas.
+	.Sistema que comporta 4 cenários diferentes, ou mais, não tem outros porque não encontrei imagens 
+	do tamanho apropriado.
+	.4 jogadores disponíveis.
+	.Rasteira da Chun Li (golpe agachada).
+	.Segundo chute para o Ryu, Ken e Fei Long (chute giratório).
+	.Hadouken - Golpe Especial.
+	.O jogador cansa de aplicar hadouken e o golpe do Fei Long (perde 10 pontos de vida).
+	.Setas (-> ou <-), combinadas com as tecla de pulo, fazem um chute giratório com o Fei Long.
